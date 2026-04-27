@@ -1,96 +1,184 @@
 import React, { useState } from 'react';
-import { Plus, Trash2, Package, Search, DollarSign, Hash, X } from 'lucide-react';
+import { Package, Plus, Search, Trash2, Tag, Hash, Archive, X, Save } from 'lucide-react';
 
 export default function Products({ user, products, onDelete, onAdd }) {
   const [searchTerm, setSearchTerm] = useState('');
-  const [showAdd, setShowAdd] = useState(false);
-  const [formData, setFormData] = useState({ name: '', code: '', price: '', stock: '' });
+  const [isAdding, setIsAdding] = useState(false);
+  const [newProduct, setNewProduct] = useState({ name: '', code: '', price: '', stock: '' });
 
-  const canEdit = user.role === 'Gerente' || user.role === 'Subgerente';
+  // Apenas gestão pode adicionar ou remover produtos
+  const isManagement = user.role === 'Gerente' || user.role === 'Subgerente';
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onAdd({ ...formData, id: Date.now(), price: Number(formData.price), stock: Number(formData.stock) });
-    setFormData({ name: '', code: '', price: '', stock: '' });
-    setShowAdd(false);
+  const filteredProducts = products.filter(p =>
+    p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    p.code.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const handleAdd = () => {
+    if (!newProduct.name || !newProduct.price) return;
+    onAdd({
+      id: Date.now(),
+      name: newProduct.name,
+      code: newProduct.code || `P${Math.floor(Math.random() * 1000)}`,
+      price: parseFloat(newProduct.price),
+      stock: parseInt(newProduct.stock) || 0
+    });
+    setIsAdding(false);
+    setNewProduct({ name: '', code: '', price: '', stock: '' });
   };
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6 animate-fade-in">
-      <div className="flex flex-col md:flex-row gap-4 justify-between items-center bg-neutral-900 p-6 rounded-3xl border border-neutral-800 shadow-xl">
-        <div className="relative flex-1 w-full">
-           <Search className="absolute left-4 top-3.5 text-neutral-600" size={18} />
-           <input 
-              type="text" 
-              placeholder="Pesquisar no catálogo..." 
-              value={searchTerm} 
-              onChange={e => setSearchTerm(e.target.value)} 
-              className="w-full bg-black border border-neutral-800 p-3 pl-12 rounded-2xl text-white outline-none focus:border-blue-600 transition-all" 
-           />
+    // Adicionado padding bottom no mobile para não grudar no fundo
+    <div className="space-y-6 animate-fade-in pb-10 lg:pb-0">
+      
+      {/* HEADER RESPONSIVO */}
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+        <div>
+          <h2 className="text-2xl font-black text-white italic tracking-tight">CATÁLOGO</h2>
+          <p className="text-[10px] text-neutral-500 uppercase font-bold tracking-widest">Gestão de portfólio e estoque</p>
         </div>
-        {canEdit && (
+        {isManagement && (
           <button 
-            onClick={() => setShowAdd(!showAdd)} 
-            className="bg-blue-600 px-6 py-3 rounded-2xl font-bold flex items-center gap-2 hover:bg-blue-500 transition-all shadow-lg shadow-blue-900/20"
+            onClick={() => setIsAdding(true)} 
+            className="w-full lg:w-auto bg-blue-600 hover:bg-blue-500 p-4 lg:p-3 rounded-xl text-xs font-bold text-white flex items-center justify-center gap-2 transition-all shadow-lg shadow-blue-900/20 active:scale-[0.98]"
           >
-            {showAdd ? <X size={20}/> : <Plus size={20}/>}
-            {showAdd ? 'Cancelar' : 'Novo Produto'}
+            <Plus size={16} /> NOVO PRODUTO
           </button>
         )}
       </div>
 
-      {showAdd && (
-        <form onSubmit={handleSubmit} className="bg-neutral-900 p-8 rounded-3xl border border-blue-600/30 grid grid-cols-1 md:grid-cols-4 gap-6 animate-slide-down shadow-2xl">
-           <div className="space-y-2">
-              <label className="text-[10px] font-bold text-neutral-500 uppercase ml-2">Nome do Item</label>
-              <input placeholder="Ex: Servidor Cloud" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full bg-black border border-neutral-800 p-3 rounded-xl outline-none focus:border-blue-500" required />
-           </div>
-           <div className="space-y-2">
-              <label className="text-[10px] font-bold text-neutral-500 uppercase ml-2">SKU / Código</label>
-              <input placeholder="P-000" value={formData.code} onChange={e => setFormData({...formData, code: e.target.value})} className="w-full bg-black border border-neutral-800 p-3 rounded-xl outline-none focus:border-blue-500" required />
-           </div>
-           <div className="space-y-2">
-              <label className="text-[10px] font-bold text-neutral-500 uppercase ml-2">Preço de Venda</label>
-              <div className="relative">
-                <DollarSign size={14} className="absolute left-3 top-4 text-neutral-600"/>
-                <input type="number" placeholder="0.00" value={formData.price} onChange={e => setFormData({...formData, price: e.target.value})} className="w-full bg-black border border-neutral-800 p-3 pl-10 rounded-xl outline-none focus:border-blue-500" required />
-              </div>
-           </div>
-           <button type="submit" className="h-[46px] mt-6 bg-white text-black rounded-xl font-black hover:bg-neutral-200 transition-all uppercase text-xs tracking-widest">
-              Salvar Produto
-           </button>
-        </form>
-      )}
-
-      <div className="bg-neutral-900 rounded-3xl border border-neutral-800 overflow-hidden shadow-2xl">
-        <table className="w-full text-left">
-          <thead className="bg-black/50 text-neutral-500 text-[10px] uppercase font-black tracking-widest border-b border-neutral-800">
-            <tr>
-              <th className="p-5">Identificador</th>
-              <th className="p-5">Produto</th>
-              <th className="p-5 text-center">Preço</th>
-              <th className="p-5 text-right">Ações</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-neutral-800/50">
-            {products.filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase())).map(p => (
-              <tr key={p.id} className="hover:bg-white/[0.02] transition-colors">
-                <td className="p-5 font-mono text-neutral-600 text-xs">{p.code}</td>
-                <td className="p-5">
-                   <div className="flex items-center gap-3">
-                      <div className="p-2 bg-neutral-800 rounded-lg text-neutral-500"><Package size={16}/></div>
-                      <span className="font-bold text-white text-sm">{p.name}</span>
-                   </div>
-                </td>
-                <td className="p-5 text-center font-black text-blue-400 text-sm">R$ {p.price.toLocaleString()}</td>
-                <td className="p-5 text-right">
-                   {canEdit && <button onClick={() => onDelete(p.id)} className="p-2 text-neutral-600 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all"><Trash2 size={18}/></button>}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      {/* BARRA DE PESQUISA */}
+      <div className="relative">
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-500" size={18} />
+        <input
+          type="text"
+          placeholder="Buscar por nome ou SKU..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full bg-neutral-900 border border-neutral-800 py-4 pl-12 pr-4 rounded-2xl text-sm text-white outline-none focus:border-blue-600 transition-all"
+        />
       </div>
+
+      {/* LISTAGEM EM CARDS (Perfeito para Mobile e Desktop) */}
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        {filteredProducts.map(product => (
+          <div key={product.id} className="bg-neutral-900 border border-neutral-800 p-5 rounded-3xl flex flex-col group hover:border-neutral-700 transition-all">
+            
+            <div className="flex justify-between items-start mb-4">
+              <div className="flex items-center gap-3 overflow-hidden">
+                <div className="w-10 h-10 rounded-xl bg-black flex shrink-0 items-center justify-center border border-neutral-800">
+                  <Package size={16} className="text-blue-500" />
+                </div>
+                <div className="min-w-0"> {/* min-w-0 ajuda o truncate a funcionar no flex */}
+                  <h4 className="text-sm font-bold text-white truncate">{product.name}</h4>
+                  <span className="text-[10px] text-neutral-500 font-mono flex items-center gap-1 mt-0.5">
+                    <Hash size={10}/> {product.code}
+                  </span>
+                </div>
+              </div>
+              
+              {isManagement && (
+                <button 
+                  onClick={() => { if(window.confirm('Excluir produto?')) onDelete(product.id) }} 
+                  className="text-neutral-600 hover:text-red-500 p-2 shrink-0 rounded-lg hover:bg-red-500/10 transition-all"
+                >
+                  <Trash2 size={16} />
+                </button>
+              )}
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 mt-auto pt-4 border-t border-neutral-800/50">
+              <div>
+                <p className="text-[9px] text-neutral-500 font-bold uppercase tracking-widest mb-1 flex items-center gap-1">
+                  <Tag size={10}/> Preço Base
+                </p>
+                <p className="text-sm font-black text-white italic">R$ {product.price.toLocaleString('pt-BR')}</p>
+              </div>
+              <div className="text-right lg:text-left">
+                <p className="text-[9px] text-neutral-500 font-bold uppercase tracking-widest mb-1 flex items-center justify-end lg:justify-start gap-1">
+                  <Archive size={10}/> Estoque
+                </p>
+                <p className={`text-sm font-bold ${product.stock < 20 ? 'text-yellow-500' : 'text-neutral-300'}`}>
+                  {product.stock} un
+                </p>
+              </div>
+            </div>
+            
+          </div>
+        ))}
+
+        {/* FEEDBACK DE BUSCA VAZIA */}
+        {filteredProducts.length === 0 && (
+          <div className="col-span-full py-16 text-center border-2 border-dashed border-neutral-800 rounded-3xl">
+            <Package size={32} className="text-neutral-700 mx-auto mb-3" />
+            <p className="text-xs text-neutral-500 uppercase font-bold tracking-widest">Nenhum produto encontrado</p>
+          </div>
+        )}
+      </div>
+
+      {/* MODAL DE ADICIONAR PRODUTO (Ajustado para não vazar no mobile) */}
+      {isAdding && (
+        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/90 backdrop-blur-md p-4">
+          <div className="bg-neutral-900 border border-neutral-800 w-full max-w-md rounded-[2rem] p-6 lg:p-8 shadow-2xl animate-scale-in max-h-[90vh] overflow-y-auto no-scrollbar">
+            
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-base font-black text-white uppercase italic tracking-tight">CADASTRAR PRODUTO</h3>
+              <button onClick={() => setIsAdding(false)} className="p-2 bg-neutral-800 rounded-full text-neutral-500 hover:text-white transition-all"><X size={20}/></button>
+            </div>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="text-[9px] text-neutral-600 font-bold uppercase block mb-1">Nome do Produto</label>
+                <input 
+                  type="text" 
+                  value={newProduct.name} 
+                  onChange={e => setNewProduct({...newProduct, name: e.target.value})} 
+                  className="w-full bg-black border border-neutral-800 p-4 rounded-xl text-white outline-none focus:border-blue-600 text-sm transition-all" 
+                />
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-[9px] text-neutral-600 font-bold uppercase block mb-1">Código (SKU)</label>
+                  <input 
+                    type="text" 
+                    value={newProduct.code} 
+                    onChange={e => setNewProduct({...newProduct, code: e.target.value})} 
+                    className="w-full bg-black border border-neutral-800 p-4 rounded-xl text-white outline-none focus:border-blue-600 text-sm font-mono transition-all" 
+                  />
+                </div>
+                <div>
+                  <label className="text-[9px] text-neutral-600 font-bold uppercase block mb-1">Estoque Inicial</label>
+                  <input 
+                    type="number" 
+                    value={newProduct.stock} 
+                    onChange={e => setNewProduct({...newProduct, stock: e.target.value})} 
+                    className="w-full bg-black border border-neutral-800 p-4 rounded-xl text-white outline-none focus:border-blue-600 text-sm transition-all" 
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <label className="text-[9px] text-neutral-600 font-bold uppercase block mb-1">Preço de Tabela (R$)</label>
+                <input 
+                  type="number" 
+                  value={newProduct.price} 
+                  onChange={e => setNewProduct({...newProduct, price: e.target.value})} 
+                  className="w-full bg-black border border-neutral-800 p-4 rounded-xl text-white outline-none focus:border-blue-600 text-sm transition-all [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [-moz-appearance:textfield]" 
+                />
+              </div>
+
+              <button 
+                onClick={handleAdd} 
+                className="w-full bg-blue-600 hover:bg-blue-500 text-white p-4 rounded-xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2 mt-6 transition-all active:scale-[0.98]"
+              >
+                <Save size={16}/> Salvar Produto
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
     </div>
   );
 }
