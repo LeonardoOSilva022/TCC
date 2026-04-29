@@ -1,9 +1,11 @@
+// Dados mock para usuários da equipe de vendas, incluindo funções e metas mensais
 export const MOCK_USERS = [
   { id: 1, name: "Admin Master", email: "ger@vendas.com", role: "Gerente", password: "123", monthlyGoal: 100000 },
   { id: 2, name: "Lucas Sub", email: "sub@vendas.com", role: "Subgerente", password: "123", monthlyGoal: 75000 },
   { id: 3, name: "Vendedor Alpha", email: "rep@vendas.com", role: "Representante", password: "123", monthlyGoal: 50000 }
 ];
 
+// Dados mock para produtos disponíveis, incluindo preços e níveis de estoque
 export const MOCK_PRODUCTS = [
   { id: 1, name: "Licença ERP Corporativa", code: "P001", price: 5500, stock: 45 },
   { id: 2, name: "Módulo Fiscal Avançado", code: "P002", price: 1200, stock: 120 },
@@ -12,6 +14,7 @@ export const MOCK_PRODUCTS = [
   { id: 5, name: "Módulo CRM Pro", code: "P005", price: 950, stock: 85 }
 ];
 
+// Dados mock para clientes, incluindo informações de contato e documentos
 export const MOCK_CLIENTS = [
   { id: 1, name: "Tech Solutions Ltda", email: "contato@techsol.com.br", phone: "(11) 98888-7777", document: "12.345.678/0001-90" },
   { id: 2, name: "Indústrias Metalúrgicas S.A.", email: "comercial@indmetal.com", phone: "(19) 3456-1234", document: "98.765.432/0001-10" },
@@ -19,6 +22,7 @@ export const MOCK_CLIENTS = [
   { id: 4, name: "Logística Expressa", email: "financeiro@logexp.com.br", phone: "(41) 3030-4040", document: "11.222.333/0001-44" }
 ];
 
+// Dados mock para pedidos, incluindo histórico de status e itens
 export const MOCK_ORDERS = [
   {
     id: "1046", sellerId: 3, client: "Tech Solutions Ltda", total: 8000, status: "Aguardando Pagamento", date: "27/04/2026",

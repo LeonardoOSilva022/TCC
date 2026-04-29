@@ -28,10 +28,10 @@ export default function Products({ user, products, onDelete, onAdd }) {
   };
 
   return (
-    // Adicionado padding bottom no mobile para não grudar no fundo
+    // Espaçamento inferior adicionado para dispositivos móveis evitar sobreposição com o fundo
     <div className="space-y-6 animate-fade-in pb-10 lg:pb-0">
       
-      {/* HEADER RESPONSIVO */}
+      {/* Cabeçalho responsivo com título e botão de adicionar produto */}
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
         <div>
           <h2 className="text-2xl font-black text-white italic tracking-tight">CATÁLOGO</h2>
@@ -47,7 +47,7 @@ export default function Products({ user, products, onDelete, onAdd }) {
         )}
       </div>
 
-      {/* BARRA DE PESQUISA */}
+      {/* Barra de pesquisa para filtrar produtos por nome ou código */}
       <div className="relative">
         <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-500" size={18} />
         <input
@@ -59,7 +59,7 @@ export default function Products({ user, products, onDelete, onAdd }) {
         />
       </div>
 
-      {/* LISTAGEM EM CARDS (Perfeito para Mobile e Desktop) */}
+      {/* Listagem de produtos em cards responsivos (1 coluna mobile, 2 tablet, 3 desktop) */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
         {filteredProducts.map(product => (
           <div key={product.id} className="bg-neutral-900 border border-neutral-800 p-5 rounded-3xl flex flex-col group hover:border-neutral-700 transition-all">
@@ -69,7 +69,7 @@ export default function Products({ user, products, onDelete, onAdd }) {
                 <div className="w-10 h-10 rounded-xl bg-black flex shrink-0 items-center justify-center border border-neutral-800">
                   <Package size={16} className="text-blue-500" />
                 </div>
-                <div className="min-w-0"> {/* min-w-0 ajuda o truncate a funcionar no flex */}
+                <div className="min-w-0"> {/* min-w-0 permite que o truncate funcione corretamente em containers flex */}
                   <h4 className="text-sm font-bold text-white truncate">{product.name}</h4>
                   <span className="text-[10px] text-neutral-500 font-mono flex items-center gap-1 mt-0.5">
                     <Hash size={10}/> {product.code}
@@ -116,7 +116,7 @@ export default function Products({ user, products, onDelete, onAdd }) {
         )}
       </div>
 
-      {/* MODAL DE ADICIONAR PRODUTO (Ajustado para não vazar no mobile) */}
+      {/* Modal de adicionar produto com posicionamento seguro para dispositivos móveis */}
       {isAdding && (
         <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/90 backdrop-blur-md p-4">
           <div className="bg-neutral-900 border border-neutral-800 w-full max-w-md rounded-[2rem] p-6 lg:p-8 shadow-2xl animate-scale-in max-h-[90vh] overflow-y-auto no-scrollbar">

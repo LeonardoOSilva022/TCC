@@ -38,11 +38,11 @@ export default function Kanban({ user, orders, usersList, updateStatus, applyDis
     }
   };
 
-  // FUNÇÃO DO BOLETO TOTALMENTE REFATORADA (Design Profissional)
+  // Função para gerar PDF do boleto bancário seguindo padrões bancários brasileiros
   const generateBoletoPDF = (order) => {
     const doc = new jsPDF();
     
-    // Cabeçalho do Banco
+    // Cabeçalho do banco com código de roteamento e sequência
     doc.setFont("helvetica", "bold"); 
     doc.setFontSize(16); 
     doc.text("BANCO SALES.IO", 10, 20);
@@ -51,17 +51,17 @@ export default function Kanban({ user, orders, usersList, updateStatus, applyDis
     doc.setFontSize(11);
     doc.text("00190.00009 02345.678901 23456.789012 8 12345678901234", 85, 20);
     
-    // Linha separadora grossa
+    // Separador horizontal para dividir cabeçalho dos detalhes de pagamento
     doc.setLineWidth(0.5);
     doc.line(10, 25, 200, 25);
     
-    // Tabela do Boleto
+    // Tabela de detalhes do boleto com 4 linhas e coluna direita para valores
     doc.rect(10, 30, 190, 60); 
     doc.line(10, 45, 200, 45); // Linha horizontal 1
     doc.line(10, 60, 200, 60); // Linha horizontal 2
-    doc.line(150, 30, 150, 90); // Coluna da direita (Valores)
+    doc.line(150, 30, 150, 90); // Divisor da coluna direita para valores
     
-    // Linha 1: Local e Vencimento
+    // Linha 1: Local de pagamento e data de vencimento (3 dias a partir da emissão)
     doc.setFontSize(8); doc.setFont("helvetica", "normal");
     doc.text("Local de Pagamento", 12, 35);
     doc.setFont("helvetica", "bold");
@@ -70,12 +70,12 @@ export default function Kanban({ user, orders, usersList, updateStatus, applyDis
     doc.text("Vencimento", 152, 35);
     doc.setFont("helvetica", "bold");
     
-    // Vencimento (Adiciona 3 dias à data atual)
+    // Calcula data de vencimento como 3 dias a partir da data atual
     const dueDate = new Date();
     dueDate.setDate(dueDate.getDate() + 3);
     doc.text(dueDate.toLocaleDateString('pt-BR'), 152, 40);
     
-    // Linha 2: Cedente
+    // Linha 2: Informações do cedente (emissor) e detalhes da conta
     doc.setFont("helvetica", "normal");
     doc.text("Cedente", 12, 50);
     doc.setFont("helvetica", "bold");
@@ -85,7 +85,7 @@ export default function Kanban({ user, orders, usersList, updateStatus, applyDis
     doc.setFont("helvetica", "bold");
     doc.text("1234 / 56789-0", 152, 55);
     
-    // Linha 3: Emissão e Número
+    // Linha 3: Data do documento e número sequencial do documento
     doc.setFont("helvetica", "normal");
     doc.text("Data do Documento", 12, 65);
     doc.setFont("helvetica", "bold");
@@ -95,19 +95,19 @@ export default function Kanban({ user, orders, usersList, updateStatus, applyDis
     doc.setFont("helvetica", "bold");
     doc.text(`102030${order.id}`, 152, 70);
     
-    // Linha 4: Valor (Atualizado com desconto, se houver)
+    // Linha 4: Valor do documento (atualizado com descontos aplicados, se houver)
     doc.setFont("helvetica", "normal");
     doc.text("Valor do Documento", 152, 80);
     doc.setFontSize(12); doc.setFont("helvetica", "bold");
     doc.text(`R$ ${order.total.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`, 152, 86);
     
-    // Dados do Sacado (Cliente)
+    // Seção de informações do sacado (cliente)
     doc.setFontSize(8); doc.setFont("helvetica", "normal");
     doc.text("Sacado", 12, 100);
     doc.setFont("helvetica", "bold");
     doc.text(order.client.toUpperCase(), 12, 105);
     
-    // Simulação visual de Código de Barras
+    // Visualização simulada do código de barras (fins de demonstração - não legível)
     doc.setFontSize(24);
     doc.text("|| ||| || ||| || |||| | ||| || |||| || | || |||| || ||| |||", 15, 125);
     doc.text("|| ||| || ||| || |||| | ||| || |||| || | || |||| || ||| |||", 15, 130);

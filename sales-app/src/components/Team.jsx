@@ -39,7 +39,7 @@ export default function Team({ user, users, onUpdateUser, onAdd }) {
             </div>
 
             <div className="space-y-2 border-t border-neutral-800 pt-6">
-               {/* APENAS O GERENTE MASTER PODE RESETAR SENHAS */}
+               {/* Apenas o Gerente Master pode redefinir senhas para segurança */}
                {isGerente ? (
                  <button 
                   onClick={() => setEditingUser({ ...u, mode: 'password' })}
@@ -55,7 +55,7 @@ export default function Team({ user, users, onUpdateUser, onAdd }) {
                  </div>
                )}
 
-               {/* GERENTE E SUBGERENTE PODEM AJUSTAR METAS DE VENDEDORES */}
+               {/* Gerentes e Subgerentes podem ajustar metas de vendas dos representantes */}
                {(isGerente || isSubGerente) && u.role === 'Representante' && (
                  <button 
                   onClick={() => setEditingUser({ ...u, mode: 'goal' })}
@@ -70,7 +70,7 @@ export default function Team({ user, users, onUpdateUser, onAdd }) {
         ))}
       </div>
 
-      {/* MODAL DE EDIÇÃO DE DADOS SENSÍVEIS */}
+      {/* Modal para edição de dados sensíveis com validação baseada em função */}
       {editingUser && (
         <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/90 backdrop-blur-md p-4">
           <div className="bg-neutral-900 border border-neutral-800 w-full max-w-sm rounded-[2.5rem] p-10 shadow-2xl animate-scale-in">

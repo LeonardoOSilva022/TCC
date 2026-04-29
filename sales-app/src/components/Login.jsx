@@ -20,9 +20,9 @@ export default function Login({ onLogin }) {
   };
 
   return (
-    // Fundo Preto Puro para Login
+    // Fundo de tela cheia para login com padrão de grade sutil para profundidade visual
     <div className="min-h-screen flex items-center justify-center bg-black p-4 font-sans text-neutral-100">
-      {/* Decoração de fundo sutil (Grid) */}
+      {/* Textura de grade baseada em CSS para decoração de fundo sutil */}
       <div className="absolute inset-0 z-0 opacity-[0.03] [background-image:linear-gradient(#404040_1px,transparent_1px),linear-gradient(90deg,#404040_1px,transparent_1px)] [background-size:32px_32px]"></div>
 
       <div className="relative z-10 max-w-lg w-full bg-neutral-900 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.7)] border border-neutral-800 p-10 md:p-12">
