@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Shield, Key, Target, UserPlus, X, Save, Lock } from 'lucide-react';
+import { Shield, Key, Target, UserPlus, X, Save, Lock, Percent } from 'lucide-react';
 
 export default function Team({ user, users, onUpdateUser, onAdd }) {
   const [editingUser, setEditingUser] = useState(null);
@@ -55,15 +55,26 @@ export default function Team({ user, users, onUpdateUser, onAdd }) {
                  </div>
                )}
 
-               {/* Gerentes e Subgerentes podem ajustar metas de vendas dos representantes */}
+               {/* Gerentes e Subgerentes podem ajustar metas e comissões dos representantes */}
                {(isGerente || isSubGerente) && u.role === 'Representante' && (
-                 <button 
-                  onClick={() => setEditingUser({ ...u, mode: 'goal' })}
-                  className="w-full flex items-center justify-between p-3.5 bg-black/40 hover:bg-black rounded-xl border border-transparent hover:border-neutral-800 transition-all mt-2"
-                 >
-                    <div className="flex items-center gap-2 text-neutral-400 text-[10px] font-bold uppercase tracking-widest"><Target size={12} className="text-blue-600"/> Meta Mensal</div>
-                    <span className="text-[10px] text-white font-black italic">R$ {u.monthlyGoal?.toLocaleString('pt-BR')}</span>
-                 </button>
+                 <>
+                   <button 
+                    onClick={() => setEditingUser({ ...u, mode: 'goal' })}
+                    className="w-full flex items-center justify-between p-3.5 bg-black/40 hover:bg-black rounded-xl border border-transparent hover:border-neutral-800 transition-all mt-2"
+                   >
+                      <div className="flex items-center gap-2 text-neutral-400 text-[10px] font-bold uppercase tracking-widest"><Target size={12} className="text-blue-600"/> Meta Mensal</div>
+                      <span className="text-[10px] text-white font-black italic">R$ {u.monthlyGoal?.toLocaleString('pt-BR')}</span>
+                   </button>
+
+                   {/* NOVO BOTÃO: Ajuste de Comissão */}
+                   <button 
+                    onClick={() => setEditingUser({ ...u, mode: 'commission' })}
+                    className="w-full flex items-center justify-between p-3.5 bg-black/40 hover:bg-black rounded-xl border border-transparent hover:border-neutral-800 transition-all mt-2"
+                   >
+                      <div className="flex items-center gap-2 text-neutral-400 text-[10px] font-bold uppercase tracking-widest"><Percent size={12} className="text-emerald-500"/> Taxa de Comissão</div>
+                      <span className="text-[10px] text-white font-black italic">{u.commissionRate || 5}%</span>
+                   </button>
+                 </>
                )}
             </div>
           </div>
@@ -76,7 +87,9 @@ export default function Team({ user, users, onUpdateUser, onAdd }) {
           <div className="bg-neutral-900 border border-neutral-800 w-full max-w-sm rounded-[2.5rem] p-10 shadow-2xl animate-scale-in">
             <div className="flex justify-between items-center mb-8">
                <h3 className="text-base font-black text-white uppercase italic tracking-tight">
-                 {editingUser.mode === 'password' ? 'Redefinir Credenciais' : 'Ajustar Meta Mensal'}
+                 {editingUser.mode === 'password' && 'Redefinir Credenciais'}
+                 {editingUser.mode === 'goal' && 'Ajustar Meta Mensal'}
+                 {editingUser.mode === 'commission' && 'Ajustar Comissão'}
                </h3>
                <button onClick={() => setEditingUser(null)} className="p-2 bg-neutral-800 rounded-full text-neutral-500 hover:text-white transition-all"><X size={20}/></button>
             </div>
@@ -88,11 +101,18 @@ export default function Team({ user, users, onUpdateUser, onAdd }) {
 
             <div className="space-y-6">
               <div>
-                <label className="text-[9px] text-neutral-600 font-bold uppercase block mb-2">{editingUser.mode === 'password' ? 'Nova Senha de Acesso' : 'Novo Valor da Meta (R$)'}</label>
+                <label className="text-[9px] text-neutral-600 font-bold uppercase block mb-2">
+                  {editingUser.mode === 'password' && 'Nova Senha de Acesso'}
+                  {editingUser.mode === 'goal' && 'Novo Valor da Meta (R$)'}
+                  {editingUser.mode === 'commission' && 'Nova Taxa de Comissão (%)'}
+                </label>
                 <input 
                   autoFocus
                   type={editingUser.mode === 'password' ? 'text' : 'number'}
-                  placeholder={editingUser.mode === 'password' ? 'Ex: Vendas@2026' : 'Ex: 50000'}
+                  placeholder={
+                    editingUser.mode === 'password' ? 'Ex: Vendas@2026' : 
+                    editingUser.mode === 'goal' ? 'Ex: 50000' : 'Ex: 7'
+                  }
                   className="w-full bg-black border border-neutral-800 p-4 rounded-2xl text-white outline-none focus:border-blue-600 transition-all text-sm font-bold"
                   onChange={(e) => setEditingUser({ ...editingUser, newValue: e.target.value })}
                 />
@@ -100,9 +120,17 @@ export default function Team({ user, users, onUpdateUser, onAdd }) {
 
               <button 
                 onClick={() => {
-                  const update = editingUser.mode === 'password' 
-                    ? { password: editingUser.newValue } 
-                    : { monthlyGoal: parseFloat(editingUser.newValue) };
+                  let update = {};
+                  if (editingUser.mode === 'password') {
+                    update = { password: editingUser.newValue };
+                  } else if (editingUser.mode === 'goal') {
+                    update = { monthlyGoal: parseFloat(editingUser.newValue) };
+                  } else if (editingUser.mode === 'commission') {
+                    // Limita a porcentagem para garantir que o gerente não digite algo bizarro
+                    const newRate = parseFloat(editingUser.newValue);
+                    update = { commissionRate: isNaN(newRate) ? 5 : newRate };
+                  }
+                  
                   onUpdateUser(editingUser.id, update);
                   setEditingUser(null);
                 }}

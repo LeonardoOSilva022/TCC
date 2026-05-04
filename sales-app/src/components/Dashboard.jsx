@@ -1,19 +1,26 @@
 import React, { useState } from 'react';
-import { TrendingUp, Users, DollarSign, Target, Award, ArrowUpRight, X, ChevronRight } from 'lucide-react';
+import { TrendingUp, Users, DollarSign, Target, Award, ArrowUpRight, X, ChevronRight, CheckCircle } from 'lucide-react';
 
 export default function Dashboard({ user, orders, usersList }) {
   const [viewingSeller, setViewingSeller] = useState(null);
   const isManagement = user.role === 'Gerente' || user.role === 'Subgerente';
   
+  const validStatuses = ['Aprovado', 'Pago', 'Em Separação', 'Enviado', 'Entregue'];
   const displayOrders = isManagement ? orders : orders.filter(o => o.sellerId === user.id);
-  const totalSales = displayOrders.reduce((sum, o) => sum + o.total, 0);
+  const validOrders = displayOrders.filter(o => validStatuses.includes(o.status));
+  
+  const totalSales = validOrders.reduce((sum, o) => sum + o.total, 0);
   
   const totalGoal = isManagement 
     ? (usersList || []).reduce((sum, u) => sum + (u.monthlyGoal || 0), 0)
     : (user.monthlyGoal || 0);
 
   const goalProgress = (totalSales / (totalGoal || 1)) * 100;
-  const commission = isManagement ? (totalSales * 0.02) : (totalSales * 0.05);
+  
+  // NOVA LÓGICA DE COMISSÃO DINÂMICA
+  // Puxa a taxa do usuário. Se não existir, o padrão é 5% (ou 2% gerencial)
+  const userCommissionRate = user.commissionRate || (isManagement ? 2 : 5);
+  const commission = totalSales * (userCommissionRate / 100);
 
   const teamToDisplay = (usersList || []).filter(u => u.role !== 'Gerente');
 
@@ -33,7 +40,7 @@ export default function Dashboard({ user, orders, usersList }) {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-neutral-900 border border-neutral-800 p-6 rounded-3xl relative overflow-hidden group">
           <Target className="absolute -right-2 -top-2 w-20 h-20 text-blue-600/10 group-hover:rotate-12 transition-transform" />
-          <p className="text-[10px] font-bold text-neutral-500 uppercase mb-2">Meta {isManagement ? 'Global' : 'Pessoal'}</p>
+          <p className="text-[10px] font-bold text-neutral-500 uppercase mb-2">Meta {isManagement ? 'Global' : 'Pessoal'} (Aprovado+)</p>
           <div className="flex items-baseline gap-2">
             <h3 className="text-2xl font-black text-white italic">{goalProgress.toFixed(1)}%</h3>
             <span className="text-[10px] text-neutral-700 font-bold uppercase">de R$ {totalGoal.toLocaleString('pt-BR')}</span>
@@ -45,14 +52,17 @@ export default function Dashboard({ user, orders, usersList }) {
 
         <div className="bg-neutral-900 border border-neutral-800 p-6 rounded-3xl relative overflow-hidden group">
           <TrendingUp className="absolute -right-2 -top-2 w-20 h-20 text-emerald-600/10 group-hover:scale-110 transition-transform" />
-          <p className="text-[10px] font-bold text-neutral-500 uppercase mb-2">Volume Faturado</p>
+          <p className="text-[10px] font-bold text-neutral-500 uppercase mb-2">Volume Faturado Válido</p>
           <h3 className="text-2xl font-black text-white italic">R$ {totalSales.toLocaleString('pt-BR')}</h3>
-          <p className="text-[9px] text-emerald-500 font-bold mt-2 uppercase flex items-center gap-1"><ArrowUpRight size={10}/> Total acumulado</p>
+          <p className="text-[9px] text-emerald-500 font-bold mt-2 uppercase flex items-center gap-1"><ArrowUpRight size={10}/> Livres de aprovação</p>
         </div>
 
         <div className="bg-neutral-900 border border-neutral-800 p-6 rounded-3xl relative overflow-hidden group">
           <DollarSign className="absolute -right-2 -top-2 w-20 h-20 text-yellow-600/10" />
-          <p className="text-[10px] font-bold text-neutral-500 uppercase mb-2">{isManagement ? 'Ganhos Gerenciais (2%)' : 'Comissão Prevista (5%)'}</p>
+          {/* TÍTULO DA COMISSÃO AGORA É DINÂMICO */}
+          <p className="text-[10px] font-bold text-neutral-500 uppercase mb-2">
+            {isManagement ? `Ganhos Gerenciais (${userCommissionRate}%)` : `Comissão Certa (${userCommissionRate}%)`}
+          </p>
           <h3 className="text-2xl font-black text-yellow-500 italic">R$ {commission.toLocaleString('pt-BR')}</h3>
         </div>
 
@@ -66,11 +76,14 @@ export default function Dashboard({ user, orders, usersList }) {
       {isManagement && (
         <div className="bg-neutral-900/50 border border-neutral-800 rounded-3xl p-8">
            <h3 className="text-sm font-black text-white uppercase tracking-tighter mb-10 flex items-center gap-2 italic">
-             <div className="w-1.5 h-4 bg-blue-600"></div> Ranking da Equipe (Clique para Detalhes)
+             <div className="w-1.5 h-4 bg-blue-600"></div> Ranking da Equipe (Considerando apenas Aprovados)
            </h3>
            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
              {teamToDisplay.map((rep, idx) => {
-               const repSales = orders.filter(o => o.sellerId === rep.id).reduce((sum, o) => sum + o.total, 0);
+               const repSales = orders
+                 .filter(o => o.sellerId === rep.id && validStatuses.includes(o.status))
+                 .reduce((sum, o) => sum + o.total, 0);
+                 
                const repProgress = (repSales / (rep.monthlyGoal || 1)) * 100;
                return (
                  <div 
@@ -99,7 +112,6 @@ export default function Dashboard({ user, orders, usersList }) {
         </div>
       )}
 
-      {/* MODAL: Resumo de Pedidos do Vendedor */}
       {viewingSeller && (
         <div className="fixed inset-0 z-[130] flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm">
           <div className="bg-neutral-900 border border-neutral-800 w-full max-w-2xl rounded-[2rem] flex flex-col max-h-[80vh] overflow-hidden animate-scale-in">
@@ -112,28 +124,38 @@ export default function Dashboard({ user, orders, usersList }) {
             </header>
             <div className="flex-1 overflow-y-auto p-6 space-y-3 custom-scrollbar">
               {orders.filter(o => o.sellerId === viewingSeller.id).length > 0 ? (
-                orders.filter(o => o.sellerId === viewingSeller.id).map(order => (
-                  <div key={order.id} className="bg-black/40 border border-neutral-800 p-4 rounded-2xl flex items-center justify-between group hover:border-neutral-700 transition-all">
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-[10px] font-mono text-neutral-600 bg-neutral-800 px-1.5 py-0.5 rounded">#{order.id}</span>
-                        <span className={`text-[9px] font-bold uppercase ${order.status === 'Pago' ? 'text-emerald-500' : 'text-yellow-500'}`}>{order.status}</span>
+                orders.filter(o => o.sellerId === viewingSeller.id).map(order => {
+                  const isPendingOrCorrection = ['Aguardando Aprovação', 'Aguardando Correção'].includes(order.status);
+                  return (
+                    <div key={order.id} className="bg-black/40 border border-neutral-800 p-4 rounded-2xl flex items-center justify-between group hover:border-neutral-700 transition-all">
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-[10px] font-mono text-neutral-600 bg-neutral-800 px-1.5 py-0.5 rounded">#{order.id}</span>
+                          <span className={`text-[9px] font-bold uppercase ${order.status === 'Pago' ? 'text-emerald-500' : isPendingOrCorrection ? 'text-red-500' : 'text-yellow-500'}`}>{order.status}</span>
+                        </div>
+                        <h4 className="text-sm font-bold text-white truncate w-48">{order.client}</h4>
                       </div>
-                      <h4 className="text-sm font-bold text-white truncate w-48">{order.client}</h4>
+                      <div className="text-right">
+                        <p className={`font-black text-sm italic leading-none ${isPendingOrCorrection ? 'text-neutral-500 line-through' : 'text-blue-400'}`}>R$ {order.total.toLocaleString('pt-BR')}</p>
+                        <p className="text-[9px] text-neutral-600 font-bold uppercase mt-1">{order.date}</p>
+                      </div>
                     </div>
-                    <div className="text-right">
-                      <p className="text-blue-400 font-black text-sm italic leading-none">R$ {order.total.toLocaleString('pt-BR')}</p>
-                      <p className="text-[9px] text-neutral-600 font-bold uppercase mt-1">{order.date}</p>
-                    </div>
-                  </div>
-                ))
+                  );
+                })
               ) : (
                 <div className="py-20 text-center opacity-20 italic text-sm">Nenhum pedido encontrado.</div>
               )}
             </div>
             <footer className="p-6 border-t border-neutral-800 bg-black/10 flex justify-between items-center">
-              <span className="text-[10px] text-neutral-500 font-bold uppercase">Total Acumulado</span>
-              <span className="text-xl font-black text-white italic">R$ {orders.filter(o => o.sellerId === viewingSeller.id).reduce((sum, o) => sum + o.total, 0).toLocaleString('pt-BR')}</span>
+              <span className="text-[10px] text-emerald-500 font-bold uppercase tracking-widest flex items-center gap-2">
+                <CheckCircle size={14} /> Total Validado (Aprovados+)
+              </span>
+              <span className="text-xl font-black text-white italic">
+                R$ {orders
+                  .filter(o => o.sellerId === viewingSeller.id && validStatuses.includes(o.status))
+                  .reduce((sum, o) => sum + o.total, 0)
+                  .toLocaleString('pt-BR')}
+              </span>
             </footer>
           </div>
         </div>
