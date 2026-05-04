@@ -22,88 +22,86 @@ export const MOCK_CLIENTS = [
   { id: 4, name: "Logística Expressa", email: "financeiro@logexp.com.br", phone: "(41) 3030-4040", document: "11.222.333/0001-44" }
 ];
 
-// Dados mock para pedidos, incluindo histórico de status e itens
+// Dados mock para pedidos - STATUS CORRIGIDOS PARA "Aguardando Aprovação"
 export const MOCK_ORDERS = [
   {
-    id: "1046", sellerId: 3, client: "Tech Solutions Ltda", total: 8000, status: "Aguardando Pagamento", date: "27/04/2026",
+    id: "1046", sellerId: 3, client: "Tech Solutions Ltda", total: 8000, status: "Aguardando Aprovação", date: "27/04/2026",
     items: [{ name: "Licença ERP Corporativa", price: 5500 }, { name: "Suporte Técnico Premium", price: 2500 }],
-    history: [{ status: "Aguardando Pagamento", date: "27/04/2026", time: "10:15" }]
+    history: [{ status: "Aguardando Aprovação", date: "27/04/2026", time: "10:15" }]
   },
   {
     id: "1047", sellerId: 2, client: "Indústrias Metalúrgicas S.A.", total: 3800, status: "Pago", date: "26/04/2026",
     items: [{ name: "Consultoria de Implantação", price: 3800 }],
-    history: [{ status: "Aguardando Pagamento", date: "26/04/2026", time: "09:00" }, { status: "Aprovado", date: "26/04/2026", time: "09:30" }, { status: "Pago", date: "26/04/2026", time: "11:45" }]
+    history: [{ status: "Aguardando Aprovação", date: "26/04/2026", time: "09:00" }, { status: "Aprovado", date: "26/04/2026", time: "09:30" }, { status: "Pago", date: "26/04/2026", time: "11:45" }]
   },
   {
     id: "1048", sellerId: 3, client: "Varejo Total Eireli", total: 1900, status: "Em Separação", date: "25/04/2026",
     items: [{ name: "Módulo CRM Pro", price: 950 }, { name: "Módulo CRM Pro", price: 950 }],
-    history: [{ status: "Aguardando Pagamento", date: "25/04/2026", time: "14:20" }, { status: "Pago", date: "25/04/2026", time: "15:10" }, { status: "Em Separação", date: "25/04/2026", time: "16:00" }]
+    history: [{ status: "Aguardando Aprovação", date: "25/04/2026", time: "14:20" }, { status: "Pago", date: "25/04/2026", time: "15:10" }, { status: "Em Separação", date: "25/04/2026", time: "16:00" }]
   },
   {
     id: "1049", sellerId: 3, client: "Logística Expressa", total: 1200, status: "Enviado", date: "24/04/2026",
     items: [{ name: "Módulo Fiscal Avançado", price: 1200 }],
     history: [{ status: "Pago", date: "24/04/2026", time: "08:10" }, { status: "Em Separação", date: "24/04/2026", time: "10:00" }, { status: "Enviado", date: "24/04/2026", time: "14:30" }]
   },
-  
- // Dados mock para pedidos, incluindo histórico de status e itens
   {
-    id: "1050", sellerId: 3, client: "Varejo Total Eireli", total: 5500, status: "Aguardando Pagamento", date: "28/04/2026",
+    id: "1050", sellerId: 3, client: "Varejo Total Eireli", total: 5500, status: "Aguardando Aprovação", date: "28/04/2026",
     items: [{ name: "Licença ERP Corporativa", price: 5500 }],
-    history: [{ status: "Aguardando Pagamento", date: "28/04/2026", time: "11:20" }]
+    history: [{ status: "Aguardando Aprovação", date: "28/04/2026", time: "11:20" }]
   },
   {
-    id: "1051", sellerId: 2, client: "Tech Solutions Ltda", total: 2400, status: "Aguardando Pagamento", date: "29/04/2026",
+    id: "1051", sellerId: 2, client: "Tech Solutions Ltda", total: 2400, status: "Aguardando Aprovação", date: "29/04/2026",
     items: [{ name: "Módulo Fiscal Avançado", price: 1200 }, { name: "Módulo Fiscal Avançado", price: 1200 }],
-    history: [{ status: "Aguardando Pagamento", date: "29/04/2026", time: "09:45" }]
+    history: [{ status: "Aguardando Aprovação", date: "29/04/2026", time: "09:45" }]
   },
   {
-    id: "1052", sellerId: 3, client: "Indústrias Metalúrgicas S.A.", total: 6300, status: "Aguardando Pagamento", date: "30/04/2026",
+    id: "1052", sellerId: 3, client: "Indústrias Metalúrgicas S.A.", total: 6300, status: "Aguardando Aprovação", date: "30/04/2026",
     items: [{ name: "Consultoria de Implantação", price: 3800 }, { name: "Suporte Técnico Premium", price: 2500 }],
-    history: [{ status: "Aguardando Pagamento", date: "30/04/2026", time: "15:10" }]
+    history: [{ status: "Aguardando Aprovação", date: "30/04/2026", time: "15:10" }]
   },
   {
     id: "1053", sellerId: 3, client: "Logística Expressa", total: 950, status: "Aprovado", date: "01/05/2026",
     items: [{ name: "Módulo CRM Pro", price: 950 }],
-    history: [{ status: "Aguardando Pagamento", date: "01/05/2026", time: "10:00" }, { status: "Aprovado", date: "01/05/2026", time: "14:30" }]
+    history: [{ status: "Aguardando Aprovação", date: "01/05/2026", time: "10:00" }, { status: "Aprovado", date: "01/05/2026", time: "14:30" }]
   },
   {
-    id: "1054", sellerId: 2, client: "Varejo Total Eireli", total: 11000, status: "Aguardando Pagamento", date: "02/05/2026",
+    id: "1054", sellerId: 2, client: "Varejo Total Eireli", total: 11000, status: "Aguardando Aprovação", date: "02/05/2026",
     items: [{ name: "Licença ERP Corporativa", price: 5500 }, { name: "Licença ERP Corporativa", price: 5500 }],
-    history: [{ status: "Aguardando Pagamento", date: "02/05/2026", time: "16:40" }]
+    history: [{ status: "Aguardando Aprovação", date: "02/05/2026", time: "16:40" }]
   },
   {
-    id: "1055", sellerId: 3, client: "Tech Solutions Ltda", total: 3800, status: "Aguardando Pagamento", date: "03/05/2026",
+    id: "1055", sellerId: 3, client: "Tech Solutions Ltda", total: 3800, status: "Aguardando Aprovação", date: "03/05/2026",
     items: [{ name: "Consultoria de Implantação", price: 3800 }],
-    history: [{ status: "Aguardando Pagamento", date: "03/05/2026", time: "08:15" }]
+    history: [{ status: "Aguardando Aprovação", date: "03/05/2026", time: "08:15" }]
   },
   {
     id: "1056", sellerId: 3, client: "Logística Expressa", total: 2500, status: "Pago", date: "03/05/2026",
     items: [{ name: "Suporte Técnico Premium", price: 2500 }],
-    history: [{ status: "Aguardando Pagamento", date: "03/05/2026", time: "09:00" }, { status: "Aprovado", date: "03/05/2026", time: "10:15" }, { status: "Pago", date: "03/05/2026", time: "16:20" }]
+    history: [{ status: "Aguardando Aprovação", date: "03/05/2026", time: "09:00" }, { status: "Aprovado", date: "03/05/2026", time: "10:15" }, { status: "Pago", date: "03/05/2026", time: "16:20" }]
   },
   {
-    id: "1057", sellerId: 2, client: "Indústrias Metalúrgicas S.A.", total: 2850, status: "Aguardando Pagamento", date: "03/05/2026",
+    id: "1057", sellerId: 2, client: "Indústrias Metalúrgicas S.A.", total: 2850, status: "Aguardando Aprovação", date: "03/05/2026",
     items: [{ name: "Módulo CRM Pro", price: 950 }, { name: "Módulo CRM Pro", price: 950 }, { name: "Módulo CRM Pro", price: 950 }],
-    history: [{ status: "Aguardando Pagamento", date: "03/05/2026", time: "11:30" }]
+    history: [{ status: "Aguardando Aprovação", date: "03/05/2026", time: "11:30" }]
   },
   {
-    id: "1058", sellerId: 3, client: "Varejo Total Eireli", total: 1200, status: "Aguardando Pagamento", date: "04/05/2026",
+    id: "1058", sellerId: 3, client: "Varejo Total Eireli", total: 1200, status: "Aguardando Aprovação", date: "04/05/2026",
     items: [{ name: "Módulo Fiscal Avançado", price: 1200 }],
-    history: [{ status: "Aguardando Pagamento", date: "04/05/2026", time: "08:45" }]
+    history: [{ status: "Aguardando Aprovação", date: "04/05/2026", time: "08:45" }]
   },
   {
-    id: "1059", sellerId: 3, client: "Tech Solutions Ltda", total: 5500, status: "Aguardando Pagamento", date: "04/05/2026",
+    id: "1059", sellerId: 3, client: "Tech Solutions Ltda", total: 5500, status: "Aguardando Aprovação", date: "04/05/2026",
     items: [{ name: "Licença ERP Corporativa", price: 5500 }],
-    history: [{ status: "Aguardando Pagamento", date: "04/05/2026", time: "09:20" }]
+    history: [{ status: "Aguardando Aprovação", date: "04/05/2026", time: "09:20" }]
   },
   {
-    id: "1060", sellerId: 2, client: "Logística Expressa", total: 7600, status: "Aguardando Pagamento", date: "04/05/2026",
+    id: "1060", sellerId: 2, client: "Logística Expressa", total: 7600, status: "Aguardando Aprovação", date: "04/05/2026",
     items: [{ name: "Consultoria de Implantação", price: 3800 }, { name: "Consultoria de Implantação", price: 3800 }],
-    history: [{ status: "Aguardando Pagamento", date: "04/05/2026", time: "10:05" }]
+    history: [{ status: "Aguardando Aprovação", date: "04/05/2026", time: "10:05" }]
   },
   {
-    id: "1061", sellerId: 3, client: "Indústrias Metalúrgicas S.A.", total: 4750, status: "Aguardando Pagamento", date: "04/05/2026",
+    id: "1061", sellerId: 3, client: "Indústrias Metalúrgicas S.A.", total: 4750, status: "Aguardando Aprovação", date: "04/05/2026",
     items: [{ name: "Consultoria de Implantação", price: 3800 }, { name: "Módulo CRM Pro", price: 950 }],
-    history: [{ status: "Aguardando Pagamento", date: "04/05/2026", time: "10:30" }]
+    history: [{ status: "Aguardando Aprovação", date: "04/05/2026", time: "10:30" }]
   }
 ];
